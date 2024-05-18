@@ -57,7 +57,7 @@ export 'src/api.dart'
         SafetySetting,
         TaskType;
 export 'src/chat.dart' show ChatSession, StartChatExtension;
-export 'src/content.dart' show Content, DataPart, Part, TextPart;
+export 'src/content.dart' show Content, DataPart, Part, TextPart, FunctionCallPart, FunctionResponsePart;
 export 'src/error.dart'
     show
         GenerativeAIException,

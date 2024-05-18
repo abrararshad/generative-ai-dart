@@ -22,7 +22,7 @@ import 'content.dart';
 import 'error.dart';
 
 final _baseUrl = Uri.https('generativelanguage.googleapis.com');
-const _apiVersion = 'v1';
+const _apiVersion = 'v1beta';
 
 enum Task {
   generateContent('generateContent'),
@@ -73,6 +73,7 @@ final class GenerativeModel {
     List<SafetySetting> safetySettings = const [],
     GenerationConfig? generationConfig,
     http.Client? httpClient,
+    List<dynamic>? tools
   }) =>
       GenerativeModel._withClient(
           client: HttpApiClient(apiKey: apiKey, httpClient: httpClient),
@@ -111,15 +112,19 @@ final class GenerativeModel {
   /// ```
   Future<GenerateContentResponse> generateContent(Iterable<Content> prompt,
       {List<SafetySetting>? safetySettings,
-      GenerationConfig? generationConfig}) async {
+      GenerationConfig? generationConfig,
+      List<dynamic>? tools}) async {
     safetySettings ??= _safetySettings;
     generationConfig ??= _generationConfig;
+    tools ??= [];
     final parameters = {
       'contents': prompt.map((p) => p.toJson()).toList(),
       if (safetySettings.isNotEmpty)
         'safetySettings': safetySettings.map((s) => s.toJson()).toList(),
       if (generationConfig case final config?)
         'generationConfig': config.toJson(),
+      if (tools!.isNotEmpty)
+        'tools': {'function_declarations': tools},
     };
     final response =
         await _client.makeRequest(_taskUri(Task.generateContent), parameters);
@@ -148,15 +153,19 @@ final class GenerativeModel {
   Stream<GenerateContentResponse> generateContentStream(
       Iterable<Content> prompt,
       {List<SafetySetting>? safetySettings,
-      GenerationConfig? generationConfig}) {
+      GenerationConfig? generationConfig,
+      List<dynamic>? tools}) {
     safetySettings ??= _safetySettings;
     generationConfig ??= _generationConfig;
+    tools ??= [];
     final parameters = <String, Object?>{
       'contents': prompt.map((p) => p.toJson()).toList(),
       if (safetySettings.isNotEmpty)
         'safetySettings': safetySettings.map((s) => s.toJson()).toList(),
       if (generationConfig case final config?)
         'generationConfig': config.toJson(),
+      if (tools!.isNotEmpty)
+        'tools': {'function_declarations': tools},
     };
     final response =
         _client.streamRequest(_taskUri(Task.streamGenerateContent), parameters);

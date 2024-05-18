@@ -57,6 +57,7 @@ Content parseContent(Object jsonObject) {
 Part _parsePart(Object? jsonObject) {
   return switch (jsonObject) {
     {'text': final String text} => TextPart(text),
+    {'functionCall': {'name': String name, 'args': Map<String, dynamic> args}} => FunctionCallPart(name, args),
     {'inlineData': {'mimeType': String _, 'data': String _}} =>
       throw UnimplementedError('inlineData content part not yet supported'),
     _ => throw FormatException('Unhandled Part format', jsonObject),
@@ -73,6 +74,22 @@ final class TextPart implements Part {
   TextPart(this.text);
   @override
   Object toJson() => {'text': text};
+}
+
+final class FunctionCallPart implements Part {
+  final String name;
+  final Map<String, dynamic> args;
+  FunctionCallPart(this.name, this.args);
+  @override
+  Object toJson() => {'functionCall': {'name': name, 'args': args}};
+}
+
+final class FunctionResponsePart implements Part {
+  final String name;
+  final Object? content;
+  FunctionResponsePart(this.name, this.content);
+  @override
+  Object toJson() => {'functionResponse': {'name': name, 'response': {'name': name, 'content': content}}};
 }
 
 final class DataPart implements Part {

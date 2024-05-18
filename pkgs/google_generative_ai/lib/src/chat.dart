@@ -160,6 +160,12 @@ final class ChatSession {
           case DataPart():
             addBufferedText();
             parts.add(part);
+          case FunctionCallPart():
+            addBufferedText();
+            parts.add(part);
+          case FunctionResponsePart():
+            addBufferedText();
+            parts.add(part);
         }
       }
     }
